@@ -77,6 +77,7 @@ extension HomeViewController:UISearchBarDelegate{
         
     }
     
+    //Search bar Cancel btn pressed
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.fetchData()
     }
@@ -106,7 +107,11 @@ extension HomeViewController:UICollectionViewDataSource,UICollectionViewDelegate
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let detailsViewController = storyboard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
+        detailsViewController.movieDetailsObj = movieObj[indexPath.row]
+        navigationController?.pushViewController(detailsViewController,
+                                                 animated: true)
     }
     
 //    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath){

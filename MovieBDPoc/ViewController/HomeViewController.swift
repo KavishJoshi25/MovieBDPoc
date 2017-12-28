@@ -11,26 +11,36 @@ import UIKit
 import AlamofireImage
 
 class HomeViewController: UIViewController {
-
+    @IBOutlet weak var movieSearchBar: UISearchBar!
+    
     @IBOutlet weak var movieGridView: UICollectionView!
     
     var movieObj = [MovieEntity]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        self.navigationController?.isNavigationBarHidden = true
         self.fetchData()
         self.initalizeUiComponents()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        self.navigationController?.isNavigationBarHidden = true
+
+    }
     
+    //MARK:initalizeUiComponents
     func initalizeUiComponents() {
+        //Collection view
         movieGridView.delegate = self
         movieGridView.dataSource = self
         
         movieGridView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
         view.addSubview(movieGridView)
         
+        //Search bar
+        movieSearchBar.delegate = self
         
     }
     
@@ -46,13 +56,34 @@ class HomeViewController: UIViewController {
     
 }
 
-class HomeVCCell: UICollectionViewCell {
-
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var movieTitleLbl: UILabel!
+//Search bar
+extension HomeViewController:UISearchBarDelegate{
+    
+    //Search bar text did chnage
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        var text =  searchBar.text
+        text = text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if(text?.count == 0) {
+            self.fetchData()
+        }else{
+            RequestResponceHandler.shared.searchMovies(queryString: searchText) { (responceDic, error, str) in
+                if error == nil{
+                    self.movieObj = responceDic
+                    self.movieGridView.reloadData()
+                }
+            }
+        }
+        
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.fetchData()
+    }
     
 }
 
+//UICollection View delegate methods
 extension HomeViewController:UICollectionViewDataSource,UICollectionViewDelegate{
     
     
@@ -78,4 +109,21 @@ extension HomeViewController:UICollectionViewDataSource,UICollectionViewDelegate
         print(indexPath.row)
     }
     
+//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath){
+//
+//        if indexPath.row == movieObj.count-1  {
+//            self.fetchData()
+//        }
+//    }
+    
 }
+
+
+class HomeVCCell: UICollectionViewCell {
+
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var movieTitleLbl: UILabel!
+    
+}
+
+

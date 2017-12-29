@@ -51,11 +51,11 @@ class RequestResponceHandler: NSObject {
                     movieEntityObj.title = dicOne["title"] as! String
                     movieEntityObj.popularity = Int(truncating: dicOne["popularity"] as! NSNumber)
                     movieEntityObj.poster_path = dicOne["poster_path"]  as! String
-                    movieEntityObj.original_language = dicOne["original_language"]  as! String
-                    movieEntityObj.original_title = dicOne["original_title"]  as! String
-                    movieEntityObj.backdrop_path = dicOne["backdrop_path"]  as! String
-                    movieEntityObj.overview = dicOne["overview"]  as! String
-                    movieEntityObj.release_date = dicOne["release_date"]  as! String
+                    movieEntityObj.original_language = dicOne["original_language"]  as? String ?? ""
+                    movieEntityObj.original_title = dicOne["original_title"]  as? String ?? ""
+                    movieEntityObj.backdrop_path = dicOne["backdrop_path"]  as? String ?? ""
+                    movieEntityObj.overview = dicOne["overview"]  as? String ?? ""
+                    movieEntityObj.release_date = dicOne["release_date"]  as? String ?? ""
                     
                     movieArrayReturn.append(movieEntityObj)
                 }
@@ -99,17 +99,16 @@ class RequestResponceHandler: NSObject {
                     movieEntityObj.id = dicOne["id"] as! NSInteger
                     movieEntityObj.video = dicOne["video"] as! Bool
                     movieEntityObj.vote_average = Int(truncating: dicOne["vote_average"]  as! NSNumber)
-                    movieEntityObj.title = dicOne["title"] as! String
+                    movieEntityObj.title = dicOne["title"] as? String ?? ""
                     movieEntityObj.popularity = Int(truncating: dicOne["popularity"] as! NSNumber)
                     movieEntityObj.poster_path = dicOne["poster_path"]  as? String ?? ""
-                    movieEntityObj.original_language = dicOne["original_language"]  as! String
-                    movieEntityObj.original_title = dicOne["original_title"]  as! String
-                    
+                    movieEntityObj.original_language = dicOne["original_language"]  as? String ?? ""
+                    movieEntityObj.original_title = dicOne["original_title"]  as? String ?? ""
                     movieEntityObj.backdrop_path = dicOne["backdrop_path"]  as? String ?? ""
                     movieEntityObj.adult = dicOne["adult"]  as! Bool
 
-                    movieEntityObj.overview = dicOne["overview"]  as! String
-                    movieEntityObj.release_date = dicOne["release_date"]  as! String
+                    movieEntityObj.overview = dicOne["overview"]  as? String ?? ""
+                    movieEntityObj.release_date = dicOne["release_date"]  as? String ?? ""
                     
                     movieArrayReturn.append(movieEntityObj)
                 }

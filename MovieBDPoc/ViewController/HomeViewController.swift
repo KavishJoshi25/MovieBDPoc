@@ -12,13 +12,20 @@ import AlamofireImage
 
 class HomeViewController: UIViewController {
     @IBOutlet weak var movieSearchBar: UISearchBar!
-    
     @IBOutlet weak var movieGridView: UICollectionView!
+    
+    
+    @IBOutlet weak var btnView: UIView!
+    @IBOutlet weak var highestRatedMovieBtn: UIButton!
+    @IBOutlet weak var pouplarMovieBtn: UIButton!
+    
+    
     
     var movieObj = [MovieEntity]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         self.navigationController?.isNavigationBarHidden = true
         self.fetchData()
         self.initalizeUiComponents()
@@ -37,11 +44,29 @@ class HomeViewController: UIViewController {
         movieGridView.dataSource = self
         
         movieGridView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+        movieGridView.backgroundColor = .black
+
         view.addSubview(movieGridView)
         
         //Search bar
         movieSearchBar.delegate = self
+        movieSearchBar.placeholder = "Search your Movie.."
         
+        //highestRatedMovieBtn
+        highestRatedMovieBtn.setTitle("Highest Rated", for: .normal)
+        highestRatedMovieBtn.backgroundColor = .white
+        highestRatedMovieBtn.layer.cornerRadius = 5
+        highestRatedMovieBtn.layer.borderWidth = 1
+        highestRatedMovieBtn.layer.borderColor = UIColor.black.cgColor
+        highestRatedMovieBtn.setTitleColor(.black, for: .normal)
+        
+        //highestRatedMovieBtn
+        pouplarMovieBtn.setTitle("Pouplar Movie", for: .normal)
+        pouplarMovieBtn.backgroundColor = .white
+        pouplarMovieBtn.layer.cornerRadius = 5
+        pouplarMovieBtn.layer.borderWidth = 1
+        pouplarMovieBtn.layer.borderColor = UIColor.black.cgColor
+        pouplarMovieBtn.setTitleColor(.black, for: .normal)
     }
     
     //MARK: fetchData form service
@@ -54,6 +79,35 @@ class HomeViewController: UIViewController {
         }
     }
     
+    //MARK: searchMovies
+    func searchMovies(searchString:String)  {
+        RequestResponceHandler.shared.searchMovies(queryString: searchString) { (responceDic, error, str) in
+            if error == nil{
+                self.movieObj = responceDic
+                self.movieGridView.reloadData()
+            }
+        }
+    }
+    
+    //MARK: getTopRatedMovies
+    func getTopRatedMovies()  {
+        
+        RequestResponceHandler.shared.topRated { (responceDic, error, str) in
+            if error == nil{
+                self.movieObj = responceDic
+                self.movieGridView.reloadData()
+            }
+        }
+    }
+    
+    @IBAction func popularMovieBtnPressed(_ sender: UIButton) {
+        self.fetchData()
+    }
+    
+    @IBAction func highRatedMovieBtnPressed(_ sender: UIButton) {
+        self.getTopRatedMovies()
+    }
+    
 }
 
 //Search bar
@@ -61,18 +115,12 @@ extension HomeViewController:UISearchBarDelegate{
     
     //Search bar text did chnage
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        var text =  searchBar.text
-        text = text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text =  searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if(text?.count == 0) {
+        if(text.count == 0) {
             self.fetchData()
         }else{
-            RequestResponceHandler.shared.searchMovies(queryString: searchText) { (responceDic, error, str) in
-                if error == nil{
-                    self.movieObj = responceDic
-                    self.movieGridView.reloadData()
-                }
-            }
+            self.searchMovies(searchString: text)
         }
         
     }
@@ -101,7 +149,8 @@ extension HomeViewController:UICollectionViewDataSource,UICollectionViewDelegate
         cell.imageView.af_setImage(withURL:  url! as URL)
         
         cell.movieTitleLbl.text = obj.title
-        cell.movieTitleLbl.textColor = .black
+        cell.movieTitleLbl.textColor = .white
+        cell.movieTitleLbl.adjustsFontSizeToFitWidth = true
         
         return cell
     }

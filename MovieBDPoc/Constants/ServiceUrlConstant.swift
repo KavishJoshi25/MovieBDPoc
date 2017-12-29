@@ -18,6 +18,12 @@ struct AppBaseUrl {
         return baseUrl + "movie/popular?" + apiKey
     }
     
+    //top_rated Call
+    static var top_rated : String {
+        return baseUrl + "movie/top_rated?" + apiKey
+    }
+    
+    
     //Search Call
     static var searchMovie : String {
         return baseUrl + "search/movie?" + apiKey + "&language=en-US&query="
@@ -27,7 +33,6 @@ struct AppBaseUrl {
     static var searchQuery : String {
         return  "&page=1&include_adult=false"
     }
-    
     
     //imageUrl Call
     static var imageUrl : String {

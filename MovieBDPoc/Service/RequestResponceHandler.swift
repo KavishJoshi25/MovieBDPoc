@@ -21,13 +21,15 @@ class RequestResponceHandler: NSObject {
     var popularMovieRequestInstance : Request? = nil
     
     //MARK:getMostPopularMovies
-    func getMostPopularMovies(onCompletion: @escaping ResponseWithDic)  {
+    func getMostPopularMovies(count:Int,onCompletion: @escaping ResponseWithDic)  {
         
         if (popularMovieRequestInstance != nil) {
             popularMovieRequestInstance?.cancel()
         }
-        popularMovieRequestInstance = Alamofire.request(AppBaseUrl.popularMovie).responseJSON(completionHandler: { (responce) in
+        popularMovieRequestInstance = Alamofire.request(AppBaseUrl.popularMovie + "&page=\(count)").responseJSON(completionHandler: { (responce) in
             self.popularMovieRequestInstance = nil
+            
+            print(AppBaseUrl.popularMovie + "&page=\(count)")
             
             if let json = responce.result.value {
                 
@@ -125,22 +127,20 @@ class RequestResponceHandler: NSObject {
     
     
     //MARK:searchMovies
-    func topRated(onCompletion: @escaping ResponseWithDic)  {
+    func topRated(count:Int,onCompletion: @escaping ResponseWithDic)  {
         
         if (popularMovieRequestInstance != nil) {
             popularMovieRequestInstance?.cancel()
         }
         
-        popularMovieRequestInstance = Alamofire.request(AppBaseUrl.top_rated  ).responseJSON(completionHandler: { (responce) in
+        popularMovieRequestInstance = Alamofire.request(AppBaseUrl.top_rated + "&page=\(count)"  ).responseJSON(completionHandler: { (responce) in
             self.popularMovieRequestInstance = nil
             
-            print(AppBaseUrl.top_rated)
+            print(AppBaseUrl.top_rated + "&page=\(count)")
             
             if let json = responce.result.value {
                 
                 let movieObj:Dictionary = json as! Dictionary<String,Any>
-                
-                //let totalPages = movieObj["total_pages"] as! NSInteger
                 
                 let resultArr = movieObj["results"] as! NSArray
                 

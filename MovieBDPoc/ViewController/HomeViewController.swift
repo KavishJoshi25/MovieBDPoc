@@ -19,6 +19,8 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var highestRatedMovieBtn: UIButton!
     @IBOutlet weak var pouplarMovieBtn: UIButton!
     
+    var count:Int = 1
+    var searchType = ""
     
     
     var movieObj = [MovieEntity]()
@@ -27,7 +29,8 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
 
         self.navigationController?.isNavigationBarHidden = true
-        self.fetchData()
+        self.fetchData(count: 1)
+        
         self.initalizeUiComponents()
     }
     
@@ -70,10 +73,11 @@ class HomeViewController: UIViewController {
     }
     
     //MARK: fetchData form service
-    func fetchData(){
-        RequestResponceHandler.shared.getMostPopularMovies { (responceDic, error, str) in
+    func fetchData(count:Int){
+        RequestResponceHandler.shared.getMostPopularMovies(count: count) { (responceDic, error, str) in
             if error == nil{
-                self.movieObj = responceDic
+                self.searchType = "popular"
+                self.movieObj.append(contentsOf: responceDic)
                 self.movieGridView.reloadData()
             }
         }
@@ -83,29 +87,41 @@ class HomeViewController: UIViewController {
     func searchMovies(searchString:String)  {
         RequestResponceHandler.shared.searchMovies(queryString: searchString) { (responceDic, error, str) in
             if error == nil{
-                self.movieObj = responceDic
+                self.movieObj.append(contentsOf: responceDic)
                 self.movieGridView.reloadData()
             }
         }
     }
     
     //MARK: getTopRatedMovies
-    func getTopRatedMovies()  {
+    func getTopRatedMovies(count:Int)  {
         
-        RequestResponceHandler.shared.topRated { (responceDic, error, str) in
+        RequestResponceHandler.shared.topRated(count: count) { (responceDic, error, str) in
             if error == nil{
-                self.movieObj = responceDic
+                self.searchType = "topRated"
+                if count > 1{
+                   self.movieObj .append(contentsOf: responceDic)
+                }else{
+                    self.movieObj = responceDic
+                }
+                
                 self.movieGridView.reloadData()
             }
         }
     }
     
     @IBAction func popularMovieBtnPressed(_ sender: UIButton) {
-        self.fetchData()
+        self.movieGridView?.scrollToItem(at: IndexPath(row: 0, section: 0),
+                                         at: .top,
+                                         animated: true)
+        self.fetchData(count: 1)
     }
     
     @IBAction func highRatedMovieBtnPressed(_ sender: UIButton) {
-        self.getTopRatedMovies()
+        self.movieGridView?.scrollToItem(at: IndexPath(row: 0, section: 0),
+                                          at: .top,
+                                          animated: true)
+        self.getTopRatedMovies(count: 1)
     }
     
 }
@@ -118,7 +134,7 @@ extension HomeViewController:UISearchBarDelegate{
         let text =  searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if(text.count == 0) {
-            self.fetchData()
+            self.fetchData(count: 1)
         }else{
             self.searchMovies(searchString: text)
         }
@@ -127,7 +143,7 @@ extension HomeViewController:UISearchBarDelegate{
     
     //Search bar Cancel btn pressed
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.fetchData()
+        self.fetchData(count: 1)
     }
     
 }
@@ -163,12 +179,25 @@ extension HomeViewController:UICollectionViewDataSource,UICollectionViewDelegate
                                                  animated: true)
     }
     
-//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath){
-//
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath){
+
 //        if indexPath.row == movieObj.count-1  {
-//            self.fetchData()
+//            count += 1
+//            self.fetchData(count: count)
 //        }
-//    }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+         count += 1
+        
+        if searchType == "popular" {
+             self.fetchData(count: count)
+        }else{
+            self.getTopRatedMovies(count: count)
+        }
+        
+       
+    }
     
 }
 
